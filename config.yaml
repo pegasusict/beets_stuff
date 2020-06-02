@@ -1,0 +1,330 @@
+# Location where your beets database is saved
+library: ~/beets.db
+# Root directory of your music
+directory: /media/pegasus/PegsMusic1/beets
+
+# Configure the importing process
+import:
+  # write updated data to files
+  write: yes
+  # copy the files into the music directory
+  copy: no
+  # move the files to the music directory
+  move: yes
+  # symlink the files into the music directory
+  link: no
+  # hardlink the files into the music directory
+  hardlink: no
+  
+  delete: no
+  resume: no
+  incremental: no
+  incremental_skip_later: no
+  from_scratch: yes
+  quiet_fallback: asis
+  none_rec_action: asis
+  timid: no
+  log: ~/beets.log
+  autotag: yes
+  quiet: yes
+  singletons: no
+  default_action: apply
+  languages: [en, nl]
+  detail: no
+  flat: no
+  group_albums: no
+  pretend: false
+  search_ids: []
+  duplicate_action: merge
+  bell: no
+  set_fields:
+    comments: "Processed by Pegasus using Beets"
+
+clutter: [ "thumbs.db", “.DS_Store”, "*.gif", "*.jpg", "*.bmp", "*.nfo", "*.m3u",
+       "*.pls", "*.xspf", ".directory", "*.url", "*.lnk" ]
+ignore: [".*", "*~", "System Volume Information", "lost+found"]
+ignore_hidden: yes
+
+replace:
+  '[\\/]': _
+  '^\.': _
+  '[\x00-\x1f]': _
+  '[<>:"\?\*\|]': _
+  '\.$': _
+  '\s+$': ''
+  '^\s+': ''
+  '^-': _
+path_sep_replace: _
+asciify_paths: yes
+art_filename: cover
+max_filename_length: 0
+
+aunique:
+  keys: albumartist album
+  disambiguators: albumtype year label catalognum albumdisambig releasegroupdisambig
+  bracket: '[]'
+
+overwrite_null:
+  album: []
+  track: []
+
+# Install these requirements if you want to use all the plugins. If you only want to use some, the required dependencies stand behind the plugins as well.
+# pip install beets[fetchart,lyrics,lastgenre] requests requests_oauthlib discogs-client pylast
+
+plugins:
+  # gets acoustic-analysis information from the AcousticBrainz project.
+  - acousticbrainz
+  - badfiles
+  # Add BeatPort as a metadata source
+#  - beatport # pip install requests requests_oauthlib
+
+#  - bucket
+  # enable MusicBrainz queries
+  - chroma
+  # Add Discogs as a metadata source
+#  - discogs # pip install discogs-client
+  # list/delete duplicate albums/tracks
+  - duplicates
+  # Edit metadata of songs or albums with a text editor like vim or micro
+  - edit
+  # Adds the cover art to the metadata of the audio files
+  - embedart
+  # The export plugin lets you get data from the database and export the content as JSON.
+  - export
+  # Downloads Covers
+  - fetchart # pip install requests
+  # ???
+#  - fuzzy
+  # skip/warn about things you hate during imports
+  - ihate
+  # ???
+  - info
+  # Use small python scripts to add logic the automated file sorting
+  - inline
+  # Downloads genres from last.fm
+  - lastgenre # pip install pylast
+  # Downloads lyrics
+#  - lyrics # pip install requests
+  - mbsync
+  # ???
+#  - missing
+  # Set file and folder permissions
+  - permissions
+  # Notify plex about new media
+#  - plexupdate
+  - random
+  - rewrite
+  - scrub
+  - the
+#  - zero
+  - web
+#  - replaygain
+#  - loadext
+# set pluginpath(s) if installation is not default
+pluginpath: []
+# Use multiple cores?
+threaded: yes
+timeout: 5.0
+# whether to sequentially number all tracks of an album or use disc based track numbers 
+per_disc_numbering: yes
+
+verbose: 0
+# If öäüß and other non standard signs won't be printed correctly try some different values here
+# https://docs.python.org/2/library/codecs.html#standard-encodings
+terminal_encoding: utf-8
+# Use the original release date of an album when a re-release is added
+original_date: yes
+artist_credit: no
+id3v23: no
+va_name: "Various Artists"
+
+ui:
+  terminal_width: 120
+  length_diff_thresh: 10.0
+# Make your output pretty! Activate color and optionaly tweak the values
+# black, darkred, darkgreen, brown (darkyellow), darkblue, purple (darkmagenta), teal (darkcyan), lightgray, darkgray, red, green, yellow, blue, fuchsia (magenta), turquoise (cyan), white
+  color: yes
+  colors:
+    text_success: green
+    text_warning: yellow
+    text_error: red
+    text_highlight: brown 
+    text_highlight_minor: lightgray
+    action_default: turquoise
+    action: blue
+
+format_item: $artist - $album - $title
+format_album: $albumartist - $album
+time_format: '%Y-%m-%d %H:%M:%S'
+format_raw_length: no
+
+sort_album: albumartist+ album+
+sort_item: artist+ album+ disc+ track+
+sort_case_insensitive: yes
+
+paths:
+  default: $initial/%the{$albumartist_sort}/$getyear%the{$album}/$disc_and_track$artist - $title [$bps] [$length]
+  singleton: $initial/%the{$artist_sort}/[9999] compilations/$artist - $title [$bps] [$length]
+  comp: $initial/%the{$artist_sort}/[9999] compilations/$artist - $title [$bps] [$length]
+
+statefile: state.pickle
+
+musicbrainz:
+  host: musicbrainz.org
+  ratelimit: 1
+  ratelimit_interval: 1.0
+  searchlimit: 5
+  extra_tags: []
+
+match:
+  strong_rec_thresh: 0.50
+  medium_rec_thresh: 0.25
+  rec_gap_thresh: 0.25
+  max_rec:
+    missing_tracks: low
+    unmatched_tracks: medium
+  distance_weights:
+    source: 2.0
+    artist: 3.0
+    album: 3.0
+    media: 1.0
+    mediums: 1.0
+    year: 1.0
+    country: 0.5
+    label: 0.5
+    catalognum: 0.5
+    albumdisambig: 0.5
+    album_id: 5.0
+    tracks: 2.0
+    missing_tracks: 0.3
+    unmatched_tracks: 0.6
+    track_title: 3.0
+    track_artist: 2.0
+    track_index: 1.0
+    track_length: 1.0
+    track_id: 5.0
+  preferred:
+    countries: ['NL', 'US', 'GB|UK']
+    media: ['CD', 'SACD', 'Digital Media|File']
+    original_year: yes
+  ignored: []
+  required: []
+  ignored_media: []
+  ignore_data_tracks: yes
+  ignore_video_tracks: yes
+  track_length_grace: 10
+  track_length_max: 30
+
+# Custom user defined variables which can be used at the 'paths' section. 'inline' plugin required
+# Each line is a small piece of python script which should return a string or an int
+item_fields:
+  getyear: |
+            if original_year > 1: yr = original_year
+            elif year > 1: yr = year
+            else: yr="-"
+            return "["+str(yr)+"] "
+  # returns bitrate without "kbps"
+  bps: bitrate/1000 #.rstrip("kbps")
+  # returns first char of albumartist's sort-name if it's alphanumeric, else "#"
+  initial: |
+           result="_"
+           if len(albumartist_sort) > 0: artist_tmp = albumartist_sort 
+           elif len(artist_sort) > 0: artist_tmp = artist_sort
+           if len(artist_tmp) > 0 and artist_tmp[0].isalnum(): result = artist_tmp[0].upper()
+           return result
+  # returns discno-trackno with padded zeros if necessary
+  disc_and_track: u'%02i-%03i. ' % (disc, track) if disctotal > 9 and tracktotal > 99
+          else u'%02i-%02i. ' % (disc, track) if disctotal > 9 and tracktotal > 9
+          else u'%02i-%01i. ' % (disc, track) if disctotal > 9
+          else u'%01i-%03i. ' % (disc, track) if disctotal > 1 and tracktotal > 99
+          else u'%01i-%02i. ' % (disc, track) if disctotal > 1 and tracktotal > 9
+          else u'%01i-%01i. ' % (disc, track) if disctotal > 1
+          else u'%03i. ' % (track) if tracktotal > 99
+          else u'%02i. ' % (track) if tracktotal > 9
+          else u'%01i. ' % (track) if tracktotal > 1
+          else ""
+# Same as above but on album basis
+album_fields:
+  # returns average bitrate of album
+  avgbitrate: |
+          total = 0
+          for item in items:
+              total += item.bitrate
+          return total / len(items)
+          
+# homogenize field values like artists' names
+rewrite:
+  artist .*jimi hendrix.*: Jimi Hendrix
+  artist .*alan parsons.*: Alan Parsons Project
+
+# Activates the embed art plugin and insert the cover into the audio files' metadata
+embedart:
+  auto: yes
+  # delete cover file afterwards
+  remove_art_file: yes
+
+# enables the loading of sqlite extensions
+#loadext:
+  # extension for parsing utf8 strings case insensitive 
+#  - libicu
+
+# place words like "the" & "a/an" to the back of the field
+the:
+  #a: yes
+  #the: yes
+  ## use ^ to make sure only the words at the start of the field are matched
+  patterns: ^de ^das ^het ^een
+  # Remove the article altogether instead of moving it to the end.
+  strip: no
+  # Use {0} to indicate the part without the article and {1} for the article. Spaces are already trimmed from ends of both parts.
+  format: '{0}, {1}'
+# Set directory & file permissions
+permissions:
+  file: 666
+  dir: 777
+
+export:
+  json:
+    formatting:
+      ensure_ascii: False
+      indent: 4
+      separators: [',' , ': ']
+      sort_keys: true
+
+# This plugin adds a new command, duplicates or dup, which finds and lists duplicate tracks or albums in your collection.
+duplicates:
+  # mark items with lower bitrates as duplicates
+  tiebreak: 
+    items: [bitrate]
+  # merge metadata/tracks
+  merge: yes
+  # delete duplicates form database and filesystem
+  delete: yes
+  # report duplicates only if all attributes are set
+  strict: no
+         
+# allows you to automatically skip things you hate during import or warn you about them. 
+#ihate:
+#  skip:
+#    - artist: ["andre hazes", "frans bauer"]
+#    - genre: [polka, operetta, speedcore, terrorcore]
+#  warn:
+#    - genre: [classical]
+#    - album: [live]
+
+#zero:
+# Note: If a custom pattern is not defined for a given field, the field will be nulled unconditionally.
+#  fields: comments
+#   comments: [EAC, LAME, from.+collection, 'ripped by']
+#   genre: [rnb, 'power metal']
+#   update_database: true
+#
+#bucket:
+#  bucket_year: ['1950-59']
+#  extrapolate: true
+#  bucket_alpha: ['A-F', 'G-M', 'N-Z']
+#
+# chroma:
+#   auto: yes
+#
+
